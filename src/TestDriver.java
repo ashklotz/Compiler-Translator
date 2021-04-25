@@ -61,5 +61,7 @@ public class TestDriver {
         //catch any parse errors
         try { Node.printInorder(parser.parse(), 0); }
         catch(Exception e){ e.printStackTrace(); }
+
+        Node.printVariables();
     }
 }

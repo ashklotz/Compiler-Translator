@@ -24,14 +24,16 @@ public class Parser {
         Node r = new Node();
         if (tokenList.get(current).tokenInstance.compareTo("main") == 0 || tokenList.get(current).tokenInstance.compareTo("data") == 0)
             r = Program();
-        else throwException();
+        else throwException(tokenList.get(current), "main or data");
 
         return r;
     }
 
-    private static void throwException() throws Exception{
-        //TODO: probably some more backend stuff to make exception easier to understand for user
-        throw new Exception("Parse Error at: " + tokenList.get(current));
+    private static void throwException(Token t, String expected) throws Exception {
+        throw new Exception("Parse Error at: " + t + ": expected " + expected);
+    }
+    private static void throwVariableException(Token t) throws Exception {
+        throw new Exception("Variable: " + t + " must be declared before use");
     }
 
     private static Node Program() throws Exception{
@@ -41,14 +43,14 @@ public class Parser {
         if (tokenList.get(current).tokenInstance.compareTo("main") == 0) {
             r.data += tokenList.get(current);
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "main");
 
         r.second = Block();
 
         if (tokenList.get(current).tokenID == TokenID.EOFTOK && tokenList.size() == 1){
             r.data += tokenList.get(current);
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "End Of File");
 
         return r;
     }
@@ -57,16 +59,19 @@ public class Parser {
         Node r = new Node("<block>");
         if (tokenList.get(current).tokenInstance.compareTo("begin") == 0){
             r.data += tokenList.get(current);
+            if (!Node.manageVariables("add", tokenList.get(current)))
+                throwVariableException(tokenList.get(current));
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "begin");
 
         r.first = Vars();
         r.second = Stats();
 
         if (tokenList.get(current).tokenInstance.compareTo("end") == 0){
             r.data += tokenList.get(current);
+            Node.manageVariables("end", tokenList.get(current));
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "end");
 
         return r;
     }
@@ -79,6 +84,7 @@ public class Parser {
 
             if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
                 r.data += tokenList.get(current);
+                Node.manageVariables("add", tokenList.get(current));
                 tokenList.remove(current);
 
                 if (tokenList.get(current).tokenInstance.compareTo(":=") == 0){
@@ -93,10 +99,10 @@ public class Parser {
                             tokenList.remove(current);
 
                             r.first = Vars();
-                        } else throwException();
-                    } else throwException();
-                } else throwException();
-            } else throwException();
+                        } else throwException(tokenList.get(current), ";");
+                    } else throwException(tokenList.get(current), "integer");
+                } else throwException(tokenList.get(current), ":=");
+            } else throwException(tokenList.get(current), "variable");
         } else r = null;
         return r;
     }
@@ -167,16 +173,17 @@ public class Parser {
             if (tokenList.get(current).tokenInstance.compareTo(")") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
+            } else throwException(tokenList.get(current), ")");
         }
         else if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
+            Node.manageVariables("check", tokenList.get(current));
             tokenList.remove(current);
         }
         else if (tokenList.get(current).tokenID == TokenID.DIGITTOK){
             r.data += tokenList.get(current);
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "Integer");
 
         return r;
     }
@@ -197,7 +204,7 @@ public class Parser {
                 tokenList.get(current).tokenInstance.compareTo("loop") == 0 ||
                 tokenList.get(current).tokenInstance.compareTo("assign") == 0 ||
                 tokenList.get(current).tokenInstance.compareTo("proc") == 0 ||
-                tokenList.get(current).tokenInstance.compareTo("Node") == 0){
+                tokenList.get(current).tokenInstance.compareTo("void") == 0){
             r.first = Stat();
             r.second = mStat();
         } else r = null;
@@ -211,14 +218,14 @@ public class Parser {
             if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
+            } else throwException(tokenList.get(current), ";");
         }
         else if (tokenList.get(current).tokenInstance.compareTo("outter") == 0){
             r.first = Out();
             if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
+            } else throwException(tokenList.get(current), ";");
         }
         else if (tokenList.get(current).tokenInstance.compareTo("begin") == 0){
             r.first = Block();
@@ -228,36 +235,36 @@ public class Parser {
             if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
+            } else throwException(tokenList.get(current), ";");
         }
         else if (tokenList.get(current).tokenInstance.compareTo("loop") == 0){
             r.first = Loop();
             if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
+            } else throwException(tokenList.get(current), ";");
         }
         else if (tokenList.get(current).tokenInstance.compareTo("assign") == 0){
             r.first = Assign();
             if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
+            } else throwException(tokenList.get(current), ";");
         }
         else if (tokenList.get(current).tokenInstance.compareTo("proc") == 0){
             r.first = Goto();
             if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
+            } else throwException(tokenList.get(current), ";");
         }
         else if (tokenList.get(current).tokenInstance.compareTo("void") == 0){
             r.first = Label();
             if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
-            } else throwException();
-        } else throwException();
+            } else throwException(tokenList.get(current), ";");
+        } else throwException(tokenList.get(current), "getter | outter | begin | if | loop | assign | proc | void");
         return r;
     }
 
@@ -269,8 +276,9 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
+            Node.manageVariables("check", tokenList.get(current));
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "variable");
         return r;
     }
 
@@ -307,9 +315,9 @@ public class Parser {
                     tokenList.remove(current);
 
                     r.fourth = Stat();
-                } else throwException();
-            } else throwException();
-        } else throwException();
+                } else throwException(tokenList.get(current), "then");
+            } else throwException(tokenList.get(current), "]");
+        } else throwException(tokenList.get(current), "[");
         return r;
     }
 
@@ -330,8 +338,8 @@ public class Parser {
                 r.data += tokenList.get(current);
                 tokenList.remove(current);
                 r.fourth = Stat();
-            } else throwException();
-        } else throwException();
+            } else throwException(tokenList.get(current), "]");
+        } else throwException(tokenList.get(current), "[");
         return r;
     }
 
@@ -343,6 +351,7 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
+            Node.manageVariables("check", tokenList.get(current));
             tokenList.remove(current);
 
             if (tokenList.get(current).tokenInstance.compareTo(":=") == 0){
@@ -350,8 +359,8 @@ public class Parser {
                 tokenList.remove(current);
 
                 r.first = Expr();
-            } else throwException();
-        } else throwException();
+            } else throwException(tokenList.get(current), ":=");
+        } else throwException(tokenList.get(current), "variable");
         return r;
     }
 
@@ -397,9 +406,9 @@ public class Parser {
                         } else throwException();
                     } else throwException();
                     */
-                } else throwException();
-            } else throwException();
-        }else throwException();
+                } else throwException(tokenList.get(current), "]");
+            } else throwException(tokenList.get(current), "==");
+        } else throwException(tokenList.get(current), "[");
         return r;
     }
 
@@ -411,8 +420,9 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
+            Node.manageVariables("check", tokenList.get(current));
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "variable");
         return r;
     }
 
@@ -424,8 +434,9 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
+            Node.manageVariables("check", tokenList.get(current));
             tokenList.remove(current);
-        } else throwException();
+        } else throwException(tokenList.get(current), "variable");
         return r;
     }
 }
