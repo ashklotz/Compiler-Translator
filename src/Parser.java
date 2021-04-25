@@ -69,7 +69,8 @@ public class Parser {
 
         if (tokenList.get(current).tokenInstance.compareTo("end") == 0){
             r.data += tokenList.get(current);
-            Node.manageVariables("end", tokenList.get(current));
+            if (!Node.manageVariables("end", tokenList.get(current)))
+                throwVariableException(tokenList.get(current));
             tokenList.remove(current);
         } else throwException(tokenList.get(current), "end");
 
@@ -84,7 +85,8 @@ public class Parser {
 
             if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
                 r.data += tokenList.get(current);
-                Node.manageVariables("add", tokenList.get(current));
+                if (!Node.manageVariables("add", tokenList.get(current)))
+                    throwVariableException(tokenList.get(current));
                 tokenList.remove(current);
 
                 if (tokenList.get(current).tokenInstance.compareTo(":=") == 0){
@@ -177,7 +179,8 @@ public class Parser {
         }
         else if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
-            Node.manageVariables("check", tokenList.get(current));
+            if (!Node.manageVariables("check", tokenList.get(current)))
+                throwVariableException(tokenList.get(current));
             tokenList.remove(current);
         }
         else if (tokenList.get(current).tokenID == TokenID.DIGITTOK){
@@ -276,7 +279,8 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
-            Node.manageVariables("check", tokenList.get(current));
+            if (!Node.manageVariables("check", tokenList.get(current)))
+                throwVariableException(tokenList.get(current));
             tokenList.remove(current);
         } else throwException(tokenList.get(current), "variable");
         return r;
@@ -351,7 +355,8 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
-            Node.manageVariables("check", tokenList.get(current));
+            if (!Node.manageVariables("check", tokenList.get(current)))
+                throwVariableException(tokenList.get(current));
             tokenList.remove(current);
 
             if (tokenList.get(current).tokenInstance.compareTo(":=") == 0){
@@ -420,7 +425,8 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
-            Node.manageVariables("check", tokenList.get(current));
+            if (!Node.manageVariables("check", tokenList.get(current)))
+                throwVariableException(tokenList.get(current));
             tokenList.remove(current);
         } else throwException(tokenList.get(current), "variable");
         return r;
@@ -434,7 +440,8 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
-            Node.manageVariables("check", tokenList.get(current));
+            if (!Node.manageVariables("check", tokenList.get(current)))
+                throwVariableException(tokenList.get(current));
             tokenList.remove(current);
         } else throwException(tokenList.get(current), "variable");
         return r;

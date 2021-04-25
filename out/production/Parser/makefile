@@ -9,12 +9,11 @@ CLASSES: \
 		TestDriver.java \
 		Scanner.java \
 		Parser.java \
-		Node.java \
-		ParseTree.java
+		Node.java
 
 default: classes
 
 classes: $(CLASSES:.java=.class)
 
 clean:
-        $(RM) *.class
+	$(RM) *.class
