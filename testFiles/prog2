@@ -3,4 +3,5 @@ data x := 5 ;
 main
 begin
 getter x ;
+outter x ;
 end

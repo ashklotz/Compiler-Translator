@@ -1,4 +1,5 @@
 $$ p2g1, remember to try variants of this with each different statement $$
+data x := 0 ;
 main
 begin
 getter x ;

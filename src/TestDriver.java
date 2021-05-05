@@ -16,36 +16,36 @@ public class TestDriver {
             filePath = args[0];
         }else{
             java.util.Scanner utilScanner = new java.util.Scanner(System.in);
-            System.out.println("1: p2g1\n" +
-                    "2: p2g2\n" +
-                    "3: p2g3\n" +
-                    "4: p2g4\n" +
-                    "5: p2g5\n" +
-                    "6: p2g6\n" +
-                    "7: p2g7Jared");
+            System.out.println("1: prog1\n" +
+                    "2: prog2\n" +
+                    "3: prog3\n" +
+                    "4: prog4\n" +
+                    "5: prog5\n" +
+                    "6: prog6\n" +
+                    "7: prog7");
             int i = utilScanner.nextInt();
 
             switch(i){
                 case 1:
-                    filePath = "src/p2g1";
+                    filePath = "testFiles/prog1";
                     break;
                 case 2:
-                    filePath = "src/p2g2";
+                    filePath = "testFiles/prog2";
                     break;
                 case 3:
-                    filePath = "src/p2g3";
+                    filePath = "testFiles/prog3";
                     break;
                 case 4:
-                    filePath = "src/p2g4";
+                    filePath = "testFiles/prog4";
                     break;
                 case 5:
-                    filePath = "src/p2g5";
+                    filePath = "testFiles/prog5";
                     break;
                 case 6:
-                    filePath = "src/p2g6";
+                    filePath = "testFiles/prog6";
                     break;
                 case 7:
-                    filePath = "src/p2g7Jared";
+                    filePath = "testFiles/prog7";
                     break;
             }
         }
