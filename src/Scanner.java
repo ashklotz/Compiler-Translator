@@ -21,11 +21,11 @@ public class Scanner {
     * 1004 = OPTOK
     * 1005 = EOFTOK
      */
-    private static List buffer; //hold each character in the file
-    private static int line = 1; //hold line numbers
-    private static final String keywords[] ={"begin", "end", "loop", "whole", "void", "exit", "getter", "outter", "main", "if", "then", "assign", "data", "proc"}; //list of all reserved words
-    private static final String legalChars = "\n =><:+-*/%.(),{};[]ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"; //list of all possible characters in the file, corresponds with position in FSA table below
-    private static final int Table[][] ={
+    private List buffer; //hold each character in the file
+    private int line = 1; //hold line numbers
+    private final String keywords[] ={"begin", "end", "loop", "whole", "void", "exit", "getter", "outter", "main", "if", "then", "assign", "data", "proc"}; //list of all reserved words
+    private final String legalChars = "\n =><:+-*/%.(),{};[]ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"; //list of all possible characters in the file, corresponds with position in FSA table below
+    private final int Table[][] ={
             {0,0,4,-2,-2,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,-2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,1},
             {1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1001,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1001},
             {1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,1002,2,2,2,2,2,2,2,2,2,2,1002},
@@ -56,7 +56,7 @@ public class Scanner {
         }
     }
 
-    public static Token Scan(){
+    public Token Scan(){
 
         int state = 0;
         int nextState = 0;
@@ -108,7 +108,7 @@ public class Scanner {
         return token;
     }
 
-    private static Token setTokenFinalState(int state, String s, int l) {
+    private Token setTokenFinalState(int state, String s, int l) {
         Token t = new Token();
         t.tokenInstance = s;
         t.lineNum = l;
@@ -132,7 +132,7 @@ public class Scanner {
         return t;
     }
 
-    private static TokenID setError(int i, String c, int line) {
+    private TokenID setError(int i, String c, int line) {
 
         if (i == -1)
             System.out.println("ERROR: no token contains \"" + c + "\"" + " line number: " + line);
@@ -142,7 +142,7 @@ public class Scanner {
         return TokenID.EOFTOK;
     }
 
-    private static String getNextChar() {
+    private String getNextChar() {
         if (buffer.isEmpty()) return "EOF";
         return buffer.get(0).toString();
     }
