@@ -6,7 +6,7 @@ Purpose: provide a test method to run a standalone scanner
 
 import java.io.FileNotFoundException;
 
-public class TestDriver {
+public class compfs {
 
     public static void main(String[] args) {
 
