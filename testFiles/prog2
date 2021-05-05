@@ -1,7 +1,5 @@
-$$ p2g2 $$
-data x := 5 ;
+$$ should return 34$$
 main
 begin
-getter x ;
-outter x ;
+outter  2 * 3 / 5 + 7 - * 11 + 13 * * 17  ;
 end
