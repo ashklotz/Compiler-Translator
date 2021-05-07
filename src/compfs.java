@@ -59,9 +59,12 @@ public class compfs {
         }
 
         //catch any parse errors
-        try { Node.printInorder(parser.parse(), 0); }
+        try {
+            //Node.printInorder(parser.parse(), 0);
+            parser.parse();
+        }
         catch(Exception e){ e.printStackTrace(); }
 
-        Node.printVariables();
+        //Node.printVariables();
     }
 }

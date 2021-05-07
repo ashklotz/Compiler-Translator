@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +46,12 @@ public class Node {
         return successful;
     }
 
+    //print the list of variables
     public static void printVariables(){ System.out.println(variables); }
 
+    public static List<String> getVariables(){ return variables; }
+
+    //print all nodes in order
     public static void printInorder(Node r, int indent){
         for (int i = 0; i < indent; i++) {
             System.out.print("  ");
@@ -56,4 +62,5 @@ public class Node {
         if (r.third != null) printInorder(r.third, indent+1);
         if (r.fourth != null) printInorder(r.fourth, indent+1);
     }
+
 }

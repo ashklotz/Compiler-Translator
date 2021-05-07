@@ -5,8 +5,9 @@ JC = javac
         $(JC) $(JFLAGS) $*.java
 
 CLASSES: \
+		VarGenerator.java \
 		Token.java \
-		TestDriver.java \
+		compfs.java \
 		Scanner.java \
 		Parser.java \
 		Node.java

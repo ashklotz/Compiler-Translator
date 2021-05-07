@@ -1,14 +1,19 @@
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
     static ArrayList<Token> tokenList;
     private static final int current = 0;
+    private static StringBuilder asm = new StringBuilder();
+    private String fileName;
 
     public Parser(String f) throws FileNotFoundException {
         Token t = new Token();
         Scanner scanner = new Scanner(f);
         tokenList = new ArrayList<>();
+        fileName = f + ".asm";
 
         //read all tokens into a list
         while (t.tokenID != TokenID.EOFTOK){
@@ -25,6 +30,12 @@ public class Parser {
         if (tokenList.get(current).tokenInstance.compareTo("main") == 0 || tokenList.get(current).tokenInstance.compareTo("data") == 0)
             r = Program();
         else throwException(tokenList.get(current), "main or data");
+
+        //create and print output file
+        FileWriter fw = new FileWriter(fileName);
+        fw.write(asm.toString());
+        fw.close();
+        System.out.println("Created file: " + fileName);
 
         return r;
     }
@@ -50,6 +61,12 @@ public class Parser {
         if (tokenList.get(current).tokenID == TokenID.EOFTOK && tokenList.size() == 1){
             r.data += tokenList.get(current);
             tokenList.remove(current);
+            asm.append("STOP\n");
+            //declare global variables
+            List<String> vars = Node.getVariables();
+            for (int i = 0; i < vars.size(); i++) {
+                asm.append(vars.get(i) + " 0");
+            }
         } else throwException(tokenList.get(current), "End Of File");
 
         return r;
@@ -87,6 +104,7 @@ public class Parser {
                 r.data += tokenList.get(current);
                 if (!Node.manageVariables("add", tokenList.get(current)))
                     throwVariableException(tokenList.get(current));
+                String tempVar = tokenList.get(current).tokenInstance;
                 tokenList.remove(current);
 
                 if (tokenList.get(current).tokenInstance.compareTo(":=") == 0){
@@ -95,6 +113,8 @@ public class Parser {
 
                     if (tokenList.get(current).tokenID == TokenID.DIGITTOK){
                         r.data += tokenList.get(current);
+                        asm.append("LOAD " + tokenList.get(current).tokenInstance + "\n");
+                        asm.append("STORE " + tempVar + "\n");
                         tokenList.remove(current);
                         if (tokenList.get(current).tokenInstance.compareTo(";") == 0){
                             r.data += tokenList.get(current);
@@ -118,7 +138,11 @@ public class Parser {
             r.data += tokenList.get(current);
             tokenList.remove(current);
 
+            asm.append("SUB ");
+
             r.second = Expr();
+
+
         }
         return r;
     }
@@ -129,6 +153,14 @@ public class Parser {
 
         if (tokenList.get(current).tokenInstance.compareTo("/") == 0 || tokenList.get(current).tokenInstance.compareTo("*") == 0){
             r.data += tokenList.get(current);
+            switch(tokenList.get(current).tokenInstance){
+                case "/":
+                    asm.append("DIV ");
+                    break;
+                case "*":
+                    asm.append("MULT ");
+                    break;
+            }
             tokenList.remove(current);
 
             r.second = N();
@@ -143,6 +175,7 @@ public class Parser {
         if (tokenList.get(current).tokenInstance.compareTo("+") == 0){
             r.data += tokenList.get(current);
             tokenList.remove(current);
+            asm.append("ADD ");
 
             r.second = A();
         }
@@ -157,6 +190,8 @@ public class Parser {
             tokenList.remove(current);
 
             r.first = M();
+
+            asm.insert(asm.lastIndexOf(" ") +1, "-");
         }
         else r.first = R();
 
@@ -181,12 +216,14 @@ public class Parser {
             r.data += tokenList.get(current);
             if (!Node.manageVariables("check", tokenList.get(current)))
                 throwVariableException(tokenList.get(current));
+            asm.append(tokenList.get(current).tokenInstance + "\n");
             tokenList.remove(current);
         }
         else if (tokenList.get(current).tokenID == TokenID.DIGITTOK){
             r.data += tokenList.get(current);
+            asm.append(tokenList.get(current).tokenInstance + "\n");
             tokenList.remove(current);
-        } else throwException(tokenList.get(current), "Integer");
+        } else throwException(tokenList.get(current), "Integer or variable");
 
         return r;
     }
@@ -281,6 +318,7 @@ public class Parser {
             r.data += tokenList.get(current);
             if (!Node.manageVariables("check", tokenList.get(current)))
                 throwVariableException(tokenList.get(current));
+            asm.append("READ " + tokenList.get(current).tokenInstance + "\n");
             tokenList.remove(current);
         } else throwException(tokenList.get(current), "variable");
         return r;
@@ -292,6 +330,7 @@ public class Parser {
         r.data += tokenList.get(current);
         tokenList.remove(current);
 
+        asm.append("WRITE ");
         r.first = Expr();
 
         return r;
@@ -391,26 +430,6 @@ public class Parser {
                     r.data += tokenList.get(current);
                     tokenList.remove(current);
 
-                    /*
-                    Let it be known, that my reading comprehension is so bad that I thought in the grammar
-                    where it said '[==] (three tokens)', that I was supposed to just consume three tokens,
-                    so thats what I did. I spent three stupid hours going back and forth at 1AM trying to fix this.
-
-                    if (tokenList.get(current).tokenID != TokenID.EOFTOK){
-                        System.out.println("<RO> " + tokenList.get(current));
-                        tokenList.remove(current);
-
-                        if (tokenList.get(current).tokenID != TokenID.EOFTOK){
-                            System.out.println("<RO> " + tokenList.get(current));
-                            tokenList.remove(current);
-
-                            if (tokenList.get(current).tokenID != TokenID.EOFTOK){
-                                System.out.println("<RO> " + tokenList.get(current));
-                                tokenList.remove(current);
-                            } else throwException();
-                        } else throwException();
-                    } else throwException();
-                    */
                 } else throwException(tokenList.get(current), "]");
             } else throwException(tokenList.get(current), "==");
         } else throwException(tokenList.get(current), "[");
@@ -425,6 +444,7 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
+            asm.append(tokenList.get(current).tokenInstance + ": NOOP");
             if (!Node.manageVariables("check", tokenList.get(current)))
                 throwVariableException(tokenList.get(current));
             tokenList.remove(current);
@@ -440,6 +460,7 @@ public class Parser {
 
         if (tokenList.get(current).tokenID == TokenID.IDENTTOK){
             r.data += tokenList.get(current);
+            asm.append("BR " + tokenList.get(current).tokenInstance);
             if (!Node.manageVariables("check", tokenList.get(current)))
                 throwVariableException(tokenList.get(current));
             tokenList.remove(current);
