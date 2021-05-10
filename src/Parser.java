@@ -138,10 +138,8 @@ public class Parser {
             r.data += tokenList.get(current);
             tokenList.remove(current);
 
-            asm.append("SUB ");
 
             r.second = Expr();
-
 
         }
         return r;
